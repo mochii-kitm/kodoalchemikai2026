@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=".INTERIOR - Premium Home Decor and Furniture Store.">
+    <title>.INTERIOR</title>
+
+    <!-- 
+      ========================================
+      1. ASSETS & FONTS
+      ========================================
+    -->
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Boxicons (Icon Library) -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        /* 
+          ========================================
+          2. CSS VARIABLES & CONFIGURATION
+          ========================================
+        */
+        @font-face {
+            font-family: 'Apercu';
+            src: url('fonts/Apercu-Regular.woff2') format('woff2');
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Apercu Mono';
+            src: url('fonts/ApercuMono-Regular.woff2') format('woff2');
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'D7CBI';
+            src: url('fonts/D7CBI.woff2') format('woff2');
+            font-display: swap;
+        }
+
+        :root {
+            /* Colors */
+            --c-bg: #f8f8f8;
+            --c-text: #222222;
+            --c-white: #ffffff;
+            --c-black: #000000;
+            --c-footer-bg: #000000;
+            --c-input-bg: #333333;
+            
+            /* Spacing System */
+            --s-container: 60px;
+            --s-section: 100px;
+            
+            /* Typography */
+            --f-main: 'Inter', sans-serif;
+            --f-display: 'D7CBI', serif;
+            --f-ui: 'Apercu', sans-serif;
+            --f-mono: 'Apercu Mono', monospace;
+
+            /* Animation Curves (More lively feel) */
+            --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1); /* Smooth ease-out */
+            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* 
+          ========================================
+          3. RESET & UTILITIES
+          ========================================
+        */
+        *, *::before, *::after { box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--c-bg);
+            color: var(--c-text);
+            font-family: var(--f-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Focus styles for Accessibility */
+        :focus-visible { outline: 2px solid var(--c-black); outline-offset: 4px; }
+
+        img { max-width: 100%; height: auto; display: block; }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; }
+        ul { list-style: none; padding: 0; margin: 0; }
+        a { text-decoration: none; color: inherit; }
+
+        /* 
+          ========================================
+          4. COMPONENTS
+          ========================================
+        */
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.0625em; /* 1px */
+            font-family: var(--f-ui);
+            color: var(--c-black);
+            background: transparent;
+            border: 2px solid var(--c-black);
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s ease, transform 0.3s ease;
+            z-index: 1;
+        }
+        .btn:hover { color: var(--c-white); transform: translateY(-2px); }
+
+        /* Button Fill Effect */
+        .btn::before {
+            content: ''; position: absolute;
+            inset: 0; background: var(--c-black);
+            transform: scaleX(0); transform-origin: right;
+            transition: transform 0.4s var(--ease-smooth);
+            z-index: -1;
+        }
+        .btn:hover::before { transform: scaleX(1); transform-origin: left; }
+
+        .btn--link {
+            padding: 0; border: none;
+            text-decoration: underline;
+            opacity: 1; transition: opacity 0.2s, transform 0.2s;
+            display: inline-block;
+        }
+        .btn--link:hover { opacity: 0.6; transform: translateX(3px); }
+
+        /* Image Styles */
+        .img--arch {
+            object-fit: cover;
+            border-radius: 160px 160px 0 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: transform 0.6s var(--ease-smooth);
+        }
+        .img--arch:hover { transform: translateY(-8px) scale(1.02); }
+
+        .img--rounded {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.6s var(--ease-smooth);
+        }
+        .handpicked__cell:hover .img--rounded { transform: scale(1.05); }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translate(-50%, 20px);
+            background: var(--c-black); color: var(--c-white);
+            padding: 14px 28px; border-radius: 4px;
+            font-family: var(--f-ui); font-size: 0.875rem;
+            opacity: 0; visibility: hidden;
+            transition: all 0.4s var(--ease-elastic);
+            z-index: 9999;
+        }
+        .toast.active { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+
+        /* Search Overlay */
+        .search-overlay {
+            position: fixed; inset: 0;
+            background: rgba(255,255,255,0.98);
+            z-index: 2000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease; backdrop-filter: blur(5px);
+        }
+        .search-overlay.active { opacity: 1; pointer-events: all; }
+        .search-input {
+            font-size: clamp(1.5rem, 4vw, 2.25rem);
+            border: none; border-bottom: 2px solid var(--c-black);
+            padding: 12px; width: 80%; max-width: 600px;
+            font-family: var(--f-display); text-align: center;
+            background: transparent; color: var(--c-text);
+            outline: none; transition: border-color 0.3s;
+        }
+        .search-close { position: absolute; top: 40px; right: 60px; font-size: 2rem; cursor: pointer; transition: transform 0.3s; }
+        .search-close:hover { transform: rotate(90deg); }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s var(--ease-smooth);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Staggered Animation Delay (Applied via JS) */
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+
+        /* 
+          ========================================
+          5. LAYOUT & SECTIONS
+          ========================================
+        */
+
+        /* Navbar */
+        .navbar {
+            background: var(--c-white); position: sticky; top: 0; z-index: 1000;
+            transition: box-shadow 0.3s ease, padding 0.3s ease;
+        }
+        .navbar.scrolled {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding-top: 10px; padding-bottom: 10px;
+        }
+        .navbar__row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px var(--s-container); transition: padding 0.3s ease;
+        }
+        .nav-group { display: flex; gap: 25px; font-size: 0.9375rem; font-family: var(--f-ui); align-items: center; }
+        .brand-logo {
+            font-family: var(--f-display); font-size: 1.75rem;
+            font-weight: 700; letter-spacing: 0.0625em; text-transform: uppercase;
+            cursor: pointer;
+        }
+        .nav-icon { font-size: 1.375rem; cursor: pointer; transition: transform 0.3s; }
+        .nav-icon:hover { transform: scale(1.1); color: #666; }
+        .mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+
+        .navbar__links {
+            display: flex; justify-content: center; gap: 40px;
+            border-bottom: 1px solid #e5e5e5; transition: opacity 0.3s;
+        }
+        .navbar.scrolled .navbar__links { opacity: 0; pointer-events: none; }
+        .nav-link {
+            cursor: pointer; padding: 14px 0; font-size: 0.875rem; font-weight: 500;
+            position: relative; letter-spacing: 0.03125em; transition: color 0.3s;
+        }
+        .nav-link:hover { color: #666; }
+        .nav-link--active { font-weight: 700; color: var(--c-black) !important; }
+        .nav-link--active::after {
+            content: ''; position: absolute; bottom: -1px; left: 0;
+            width: 100%; height: 2px; background: var(--c-black);
+        }
+
+        /* Hero */
+        .hero {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 50px var(--s-container); min-height: 75vh;
+            overflow: hidden; /* For parallax */
+            perspective: 1000px; /* Enable 3D space */
+        }
+        .hero__content { flex: 1; padding-right: 40px; max-width: 60%; z-index: 2; }
+        .hero__title {
+            font-family: var(--f-display); font-size: clamp(2.25rem, 5vw, 4.375rem);
+            line-height: 1.1; margin-bottom: 40px; letter-spacing: -0.03125em;
+        }
+        .hero__gallery {
+            flex: 1; display: flex; gap: 30px; align-items: flex-end; justify-content: center;
+            perspective: 1000px;
+        }
+        /* Hero Parallax Elements */
+        .hero__img-wrapper {
+            transition: transform 0.1s ease-out; will-change: transform;
+        }
+        .hero__img--s { width: 240px; height: 280px; }
+        .hero__img--l { width: 420px; height: 480px; }
+
+        /* Features */
+        .features {
+            background: #f3f3f3; padding: var(--s-section) var(--s-container);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; text-align: center;
+        }
+        .feature__subtitle {
+            font-family: var(--f-mono); font-size: 0.875rem; margin-bottom: 15px;
+            letter-spacing: 0.125em; color: #666;
+        }
+        .feature__title {
+            font-family: var(--f-ui); font-size: 1.75rem; margin: 0; line-height: 1.2;
+            transition: transform 0.3s;
+        }
+        .feature-box:hover .feature__title { transform: translateY(-5px); color: #000; }
+        .feature__title--fancy { font-family: var(--f-display); }
+        .feature__desc { margin-top: 20px; font-size: 0.9375rem; opacity: 0.7; line-height: 1.7; }
+
+        /* New Arrivals (Data Driven) */
+        .arrivals {
+            padding: var(--s-section) var(--s-container); background: var(--c-white);
+            display: flex; gap: 60px; align-items: flex-start;
+        }
+        .arrivals__sidebar {
+            flex: 0 0 30%; position: sticky; top: 100px;
+            display: flex; flex-direction: column; gap: 25px;
+        }
+        .arrivals__title { font-family: var(--f-display); font-size: 3rem; margin: 0; line-height: 1; }
+        .arrivals__desc { font-size: 1rem; color: #555; margin: 0; line-height: 1.8; }
+        .link--underline {
+            text-decoration: underline; font-weight: 600; cursor: pointer;
+            font-size: 0.875rem; letter-spacing: 0.0625em; position: relative; display: inline-block;
+        }
+        .link--underline::after {
+            content: ''; position: absolute; width: 100%; height: 1px; bottom: -2px; left: 0;
+            background: currentColor; transform: scaleX(0); transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        .link--underline:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        .arrivals__scroller-wrapper { flex: 1; position: relative; }
+        .arrivals__scroller {
+            display: flex; gap: 30px; overflow-x: auto; padding-bottom: 40px;
+            scrollbar-width: none; scroll-snap-type: x mandatory; /* Better mobile feel */
+        }
+        .arrivals__scroller::-webkit-scrollbar { display: none; }
+        .product-card {
+            min-width: 280px; cursor: pointer; flex-shrink: 0;
+            transition: transform 0.3s; scroll-snap-align: start;
+        }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-card__img {
+            width: 100%; height: 350px; object-fit: cover;
+            display: block; margin-bottom: 20px; border-radius: 4px;
+            transition: opacity 0.3s; background-color: #f0f0f0;
+        }
+        .product-card:hover .product-card__img { opacity: 0.9; }
+        .product-card__info { display: flex; justify-content: space-between; align-items: flex-start; }
+        .product-card__name { margin: 0; font-size: 1rem; font-weight: 500; }
+        .product-card__price { font-size: 1rem; font-weight: 600; }
+
+        .scroll-progress-track {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: #eee;
+        }
+        .scroll-progress-bar { height: 100%; background: var(--c-black); width: 0%; transition: width 0.1s linear; }
+
+        /* Category Hero */
+        .category-hero {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 80px var(--s-container); background: var(--c-white);
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .category-hero__img { width: 350px; height: 450px; object-fit: cover; }
+        .category-list {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            gap: 25px; text-align: center; padding: 0 40px;
+        }
+        .category-list__header {
+            font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.125em;
+            color: #888; margin-bottom: 10px; text-transform: uppercase;
+        }
+        .category-item {
+            width: 100%; max-width: 500px; font-family: var(--f-display); font-size: 1.5rem;
+            color: #888; cursor: pointer; display: flex; justify-content: space-between;
+            align-items: baseline; transition: all 0.3s ease; position: relative;
+        }
+        .category-item::before {
+            content: ''; position: absolute; left: -20px; top: 50%; transform: translateY(-50%);
+            width: 0; height: 2px; background: var(--c-black); transition: width 0.3s ease;
+        }
+        .category-item:hover { color: #555; padding-left: 10px; }
+        .category-item.is-active { font-size: 2.5rem; color: var(--c-black); font-weight: 700; }
+        .category-item.is-active::before { width: 15px; }
+        .category-item__count { font-family: var(--f-mono); font-size: 1rem; color: #bbb; }
+        .category-item.is-active .category-item__count { color: #666; }
+
+        /* Handpicked */
+        .handpicked {
+            background: var(--c-white); padding: var(--s-section) var(--s-container);
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .handpicked__grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 30px; width: 100%; max-width: 1400px; margin-bottom: 60px;
+        }
+        .handpicked__cell {
+            position: relative; overflow: hidden; border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .hp-area--top { grid-column: 1 / -1; grid-row: 1; height: 300px; }
+        .hp-area--left { grid-column: 1; grid-row: 2; height: 400px; }
+        .hp-area--right { grid-column: 3; grid-row: 2; height: 400px; }
+        .hp-area--content {
+            grid-column: 2; grid-row: 2; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            padding: 20px; z-index: 2;
+        }
+        .handpicked__title {
+            font-family: var(--f-display); font-size: 2.625rem; color: var(--c-black);
+            margin: 0 0 30px; line-height: 1.1;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--c-footer-bg); color: var(--c-white);
+            padding: 60px var(--s-container) 30px;
+        }
+        .footer__newsletter { padding-bottom: 40px; max-width: 500px; }
+        .footer__subtitle {
+            font-family: var(--f-mono); font-size: 0.8125rem; letter-spacing: 0.09375em;
+            color: #ccc; text-transform: uppercase; margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex; background: var(--c-input-bg); border-radius: 4px;
+            padding: 5px 5px 5px 20px; align-items: center; margin-bottom: 15px;
+        }
+        .input-group__field {
+            background: transparent; border: none; color: #fff; font-size: 1rem;
+            font-family: var(--f-display); width: 100%; padding: 12px 0; outline: none;
+        }
+        .input-group__icon { font-size: 1.5rem; color: #fff; cursor: pointer; transition: transform 0.3s; }
+        .input-group__icon:hover { transform: translateX(5px); }
+        .checkbox-group { display: flex; align-items: flex-start; gap: 10px; font-size: 0.6875rem; color: #888; line-height: 1.3; }
+        .checkbox-group__input { accent-color: #fff; margin-top: 2px; cursor: pointer; }
+        .footer__separator { width: 100%; height: 1px; background: #333; margin: 30px 0; }
+        .footer__links {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+            padding: 10px 0 30px;
+        }
+        .footer__link {
+            margin-bottom: 12px; font-size: 0.8125rem; color: #ccc; cursor: pointer;
+            transition: padding-left 0.3s;
+        }
+        .footer__link:hover { color: #fff; padding-left: 5px; }
+        .footer__bottom {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 10px; flex-wrap: wrap; gap: 20px;
+        }
+        .footer__copyright { font-size: 0.75rem; color: #666; }
+        .footer__meta { display: flex; align-items: center; gap: 40px; }
+        .locale-selector { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.875rem; }
+        .locale-selector__flag { width: 20px; border-radius: 2px; }
+        .payment-methods { display: flex; align-items: center; gap: 15px; }
+        .payment-methods__label { font-size: 0.6875rem; letter-spacing: 0.0625em; text-transform: uppercase; color: #888; }
+        .payment-methods__icons { display: flex; gap: 12px; }
+        .payment-icon { font-size: 1.5rem; color: #fff; transition: color 0.3s; }
+        .payment-icon:hover { color: #888; }
+
+        /* 
+          ========================================
+          6. RESPONSIVE DESIGN
+          ========================================
+        */
+        @media (max-width: 1024px) {
+            :root { --s-container: 40px; }
+            .hero { flex-direction: column; text-align: center; padding-top: 40px; }
+            .hero__content { padding-right: 0; max-width: 100%; margin-bottom: 40px; }
+            .features { grid-template-columns: repeat(2, 1fr); }
+            .arrivals { flex-direction: column; }
+            .arrivals__sidebar { position: static; width: 100%; }
+            .category-hero { flex-direction: column; text-align: center; gap: 40px; }
+            .category-hero__img { width: 100%; max-width: 350px; height: 350px; }
+            .handpicked__grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+            .hp-area--top, .hp-area--left, .hp-area--right, .hp-area--content {
+                grid-column: 1; grid-row: auto; height: 250px;
+            }
+            .hp-area--content { order: -1; padding: 40px 20px; background: #fff; height: auto; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+            .footer__links { grid-template-columns: repeat(2, 1fr); }
+            .footer__bottom { flex-direction: column; text-align: center; gap: 30px; }
+            .footer__meta { flex-direction: column; gap: 20px; }
+        }
+
+        @media (max-width: 768px) {
+            :root { --s-container: 20px; }
+            .navbar__links { display: none; }
+            .mobile-toggle { display: block; }
+            .navbar__row { padding: 15px 20px; }
+            .hero__gallery { flex-direction: column; align-items: center; gap: 20px; }
+            .hero__img--s, .hero__img--l { width: 100% !important; max-width: 320px; height: auto !important; aspect-ratio: 3/4; }
+            .features { grid-template-columns: 1fr; padding: 60px 20px; }
+            .category-list { max-width: 100%; }
+            .category-item { justify-content: space-between; }
+            .footer__links { grid-template-columns: 1fr; text-align: center; }
+            .footer__newsletter { max-width: 100%; }
+            .brand-logo { font-size: 1.5rem; }
+        }
+
+.announcement-bar {
+    background: #000000; /* Ensure pure black */
+    color: #ffffff;    /* Ensure pure white */
+    padding: 12px 0;    /* Slightly more padding for better centering */
+    text-align: center;  /* Center the text horizontally */
+    font-size: 13px;
+    position: relative;
+    letter-spacing: 0.05em; /* Slightly tighter letter spacing */
+    
+    /* Font Fallback Chain */
+    font-family: var(--f-ui), 'Inter', sans-serif; 
+    font-weight: 500;     /* Ensure text isn't too thin/invisible */
+    line-height: 1.2;     /* Prevent vertical offset */
+    
+    width: 100%;          /* Force full width to fix centering */
+    box-sizing: border-box;
+    
+    transition: transform 0.4s ease;
+    z-index: 2000;
+    display: flex;        /* Flexbox for vertical centering of the X icon */
+    justify-content: center;
+    align-items: center;
+}
+
+    /* When closed */
+    .announcement-bar.is-hidden {
+        transform: translateY(-100%);
+        position: absolute;
+        width: 100%;
+    }
+
+    /* Close Button */
+    .announcement-bar__close {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #ffffff;
+        transition: color 0.2s, transform 0.2s;
+    }
+
+    .announcement-bar__close:hover { 
+        color: #aaa; 
+        transform: translateY(-50%) rotate(90deg); /* Rotate on hover */
+    }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Action Successful</div>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay">
+        <i class='bx bx-x search-close' onclick="App.ui.toggleSearch()"></i>
+        <input type="text" class="search-input" placeholder="Search products..." id="searchInput" aria-label="Search">
+    </div>
+
+    <!-- Announcement Bar -->
+    <div class="announcement-bar" id="saleBar">
+        FREE WORLDWIDE SHIPPING DELIVERY OVER $300
+        <i class="bx bx-x announcement-bar__close" onclick="App.ui.closeAnnouncement()"></i>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar__row">
+            <div class="nav-group">
+                <i class='bx bx-menu mobile-toggle' onclick="App.ui.toggleMobileMenu()"></i>
+                <div class="desktop-only">About</div>
+                <div class="desktop-only">Lookbook</div>
+            </div>
+            <div class="brand-logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">.INTERIOR</div>
+            <div class="nav-group">
+                <i class="bx bx-search nav-icon" onclick="App.ui.toggleSearch()" aria-label="Search"></i>
+                <i class="bx bx-user nav-icon" onclick="App.ui.showToast('Account Panel coming soon')" aria-label="Account"></i>
+                <i class="bx bx-shopping-bag nav-icon" onclick="App.ui.showToast('Shopping Cart is empty')" aria-label="Cart"></i>
+            </div>
+        </div>
+        <div class="navbar__links" id="navLinks">
+            <!-- Links injected via JS for easier management -->
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero reveal" id="heroSection">
+            <div class="hero__content">
+                <h1 class="hero__title">WE OFFERING YOU THE BEST HOME DECOR PRODUCTS & ITEMS FOR A DREAM HOME</h1>
+                <button class="btn" onclick="App.utils.scrollTo('arrivals')">EXPLORE OUR PRODUCTS</button>
+            </div>
+            <div class="hero__gallery">
+                <!-- Parallax Wrappers added for Liveliness -->
+                <div class="hero__img-wrapper">
+                    <img class="hero__img--s img--arch" src="" alt="Interior Decor" data-key="hero1">
+                </div>
+                <div class="hero__img-wrapper">
+                    <img class="hero__img--l img--arch" src="" alt="Modern Living Room" data-key="hero2">
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features reveal">
+            <div class="feature-box stagger-1">
+                <h2 class="feature__subtitle">FIND</h2>
+                <h3 class="feature__title">Unique & Modern<br>Products</h3>
+                <p class="feature__desc">Discover curated interior pieces designed to elevate your living space with style and personality.</p>
+            </div>
+            <div class="feature-box stagger-2">
+                <h2 class="feature__subtitle">BUY</h2>
+                <h3 class="feature__title feature__title--fancy">Expertly Vetted<br>Quality</h3>
+                <p class="feature__desc">Every item is hand‑selected to ensure premium craftsmanship, durability, and timeless appeal.</p>
+            </div>
+            <div class="feature-box stagger-3">
+                <h2 class="feature__subtitle">COLLECT</h2>
+                <h3 class="feature__title feature__title--fancy">Delivery At Your<br>Door</h3>
+                <p class="feature__desc">Fast, reliable worldwide shipping ensures your dream home essentials arrive safely and on time.</p>
+            </div>
+        </section>
+
+        <!-- New Arrivals Section -->
+        <section class="arrivals reveal" id="arrivals">
+            <div class="arrivals__sidebar">
+                <h2 class="arrivals__title">New Arrivals</h2>
+                <p class="arrivals__desc">Check out our latest collection of modern furniture and decor items curated just for you.</p>
+                <span class="link--underline" onclick="App.ui.showToast('Loading all products...')">VIEW ALL</span>
+            </div>
+            <div class="arrivals__scroller-wrapper">
+                <div class="arrivals__scroller" id="scrollContainer">
+                    <!-- Products injected via JS -->
+                </div>
+                <div class="scroll-progress-track">
+                    <div class="scroll-progress-bar" id="scrollProgress"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Hero Section -->
+        <section class="category-hero reveal">
+            <img src="" alt="Minimalist Chair" class="category-hero__img img--arch" data-key="cat1">
+            <div class="category-list">
+                <div class="category-list__header">Shop By Category</div>
+                <!-- Categories injected via JS -->
+                <div id="categoryContainer"></div>
+                <button class="btn btn--link" onclick="App.ui.showToast('Loading more categories...')">SEE MORE</button>
+            </div>
+            <img src="" alt="Modern Sofa" class="category-hero__img img--arch" data-key="cat2">
+        </section>
+
+        <!-- Handpicked Section -->
+        <section class="handpicked reveal">
+            <div class="handpicked__grid">
+                <div class="hp-area--top handpicked__cell">
+                    <img class="img--rounded" src="" alt="Top Wide Interior" data-key="handpick1">
+                </div>
+                <div class="hp-area--left handpicked__cell">
+                    <img class="img--rounded" src="" alt="Left Decor" data-key="handpick2">
+                </div>
+                <div class="hp-area--content">
+                    <h2 class="handpicked__title">We Provide best handpicked home decor</h2>
+                    <button class="btn" onclick="App.utils.scrollTo('arrivals')">EXPLORE OUR PRODUCTS</button>
+                </div>
+                <div class="hp-area--right handpicked__cell">
+                    <img class="img--rounded" src="" alt="Right Decor" data-key="handpick3">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer__newsletter">
+            <h3 class="footer__subtitle">Subscribe to recieve grape news & offers</h3>
+            <div class="input-group">
+                <input type="email" id="emailInput" class="input-group__field" placeholder="Enter your email">
+                <i class="bx bx-right-arrow-alt input-group__icon" onclick="App.footer.subscribe()"></i>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="privacy" class="checkbox-group__input" checked>
+                <label for="privacy">I've read the Privacy Policy and I consent to Halal Interior sending me marketing communications</label>
+            </div>
+        </div>
+        <div class="footer__separator"></div>
+        <div class="footer__links" id="footerLinks">
+            <!-- Links injected via JS -->
+        </div>
+        <div class="footer__separator"></div>
+        <div class="footer__bottom">
+            <div class="footer__copyright">© 2026 .INTERIOR — All Rights Reserved</div>
+            <div class="footer__meta">
+                <div class="locale-selector" onclick="App.footer.toggleLanguage()">
+                    <img src="https://flagcdn.com/w40/us.png" alt="US Flag" class="locale-selector__flag" id="langFlag">
+                    <span id="langText">United States</span>
+                    <i class="bx bx-chevron-down"></i>
+                </div>
+                <div class="payment-methods">
+                    <div class="payment-methods__label">We Accept</div>
+                    <div class="payment-methods__icons">
+                        <i class="bx bxl-amazon payment-icon" title="Amazon Pay"></i>
+                        <i class="bx bxl-apple payment-icon" title="Apple Pay"></i>
+                        <i class="bx bxl-google-pay payment-icon" title="Google Pay"></i>
+                        <i class="bx bxl-visa payment-icon" title="Visa"></i>
+                        <i class="bx bxl-mastercard payment-icon" title="Mastercard"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 
+      ========================================
+      JAVASCRIPT LOGIC
+      ========================================
+    -->
+    <script>
+        /**
+         * APPLICATION CONFIGURATION & DATA
+         * 
+         * Developer Note: 
+         * To add a new product, simply add an object to the 'products' array below.
+         * The system automatically handles rendering, errors, and responsive layout.
+         */
+        const DB = {
+            images: {
+                // User's Figma Links (Private/Auth Protected)
+                hero1: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/0ab699a74467a6a673e87d8d7c1cdde43d08eaa4",
+                hero2: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/74a4ac56658b5a33a50e66f4cd9df602153529d5",
+                cat1: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/6ebebe5f32536a6f71776d5f1bdf557ae8990807",
+                cat2: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/20f6dec9ded5b87e78d22c5919937b0e46f4aac0",
+                handpick1: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/31f46916ef019b70a4f6d65cde29441d073dbcdf",
+                handpick2: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/e9c2a10b919dce831213e309ef08244ca04220ff",
+                handpick3: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/b56c5d7a483387f283b75c509ec9fabfda3ab218",
+                
+                // Unsplash Fallbacks (High Quality)
+                // Used if Figma links fail (404/Auth) for public viewers
+                fallbackHero1: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
+                fallbackHero2: "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1000&q=80",
+                fallbackCat1: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=600&q=80",
+                fallbackCat2: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80",
+                fallbackHand1: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=80",
+                fallbackHand2: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=600&q=80",
+                fallbackHand3: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=600&q=80"
+            },
+            products: [
+                { id: 1, name: "Arm Sofas", price: "$45.80", img: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/46e6e4c8282dffe1871973d3539b65e9fa0a41bd", fallback: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80" },
+                { id: 2, name: "Modern Chair", price: "$120.00", img: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/fbc892795486d2eea6c768c9fff73f253022dc82", fallback: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?auto=format&fit=crop&w=600&q=80" },
+                { id: 3, name: "Living Set", price: "$350.00", img: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/337d475965cc8f3a1e1d2096077b1da7caca329a", fallback: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=600&q=80" },
+                { id: 4, name: "Queen Bed", price: "$599.00", img: "https://www.figma.com/file/NU2hkSIzInIqvIzrB48Lal/image/c5d9f048e9f56ffcecb740cd30bbdc529d2ce664", fallback: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=600&q=80" },
+                { id: 5, name: "Arc Lamp", price: "$89.00", img: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80", fallback: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80" }
+            ],
+            categories: [
+                { name: "Trendy Sofa Set", count: 60 },
+                { name: "Minimal & Modern Chairs", count: 99, active: true },
+                { name: "Accessories For Room", count: 85 },
+                { name: "Kitchen Items", count: 85 },
+                { name: "Outdoor Decor", count: 85 }
+            ],
+            navLinks: ["New In", "Furnitures", "Lights", "Rugs", "Decor", "Accessories"],
+            footerColumns: [
+                ["ALL PRODUCTR", "New Arrivals", "Best Sellers", "Order Online", "Lowest Prices"],
+                ["PRIVACY POLICY", "Terms & Conditions", "Cookie Policy", "Accessibility", "Delivery Info"],
+                ["Support", "FAQ", "Shipping", "Returns", "Warranty"],
+                ["Contact Us", "Careers", "Press", "Affiliates", "Store Locator"]
+            ]
+        };
+
+        /**
+         * APPLICATION CONTROLLER
+         * Encapsulates all logic to prevent global scope pollution
+         */
+        const App = {
+            init: () => {
+                App.render.loadImages();
+                App.render.products();
+                App.render.categories();
+                App.render.navLinks();
+                App.render.footerLinks();
+                App.utils.initScrollReveal();
+                App.utils.attachEventListeners();
+                App.utils.initParallax(); // Added for "Liveliness"
+            },
+
+            /**
+             * RENDER FUNCTIONS
+             * Separation of Data and View
+             */
+            render: {
+                /**
+                 * Smart Image Loader with Fallback
+                 * Tries user link, falls back to Unsplash on error (404/Auth)
+                 */
+                loadImages: () => {
+                    document.querySelectorAll('img[data-key]').forEach(img => {
+                        const key = img.dataset.key;
+                        const fallbackKey = 'fallback' + key.charAt(0).toUpperCase() + key.slice(1);
+                        
+                        img.src = DB.images[key];
+                        img.onerror = () => {
+                            console.warn(`Image failed: ${DB.images[key]}. Using fallback.`);
+                            if(DB.images[fallbackKey]) {
+                                img.src = DB.images[fallbackKey];
+                            }
+                        };
+                    });
+                },
+
+                products: () => {
+                    const container = document.getElementById('scrollContainer');
+                    container.innerHTML = DB.products.map(product => `
+                        <article class="product-card" onclick="App.ui.addToCart('${product.name}')">
+                            <img class="product-card__img" src="${product.img}" 
+                                 alt="${product.name}" loading="lazy"
+                                 onerror="this.src='${product.fallback}'">
+                            <div class="product-card__info">
+                                <h4 class="product-card__name">${product.name}</h4>
+                                <span class="product-card__price">${product.price}</span>
+                            </div>
+                        </article>
+                    `).join('');
+                },
+
+                categories: () => {
+                    const container = document.getElementById('categoryContainer');
+                    container.innerHTML = DB.categories.map((cat, index) => `
+                        <div class="category-item ${cat.active ? 'is-active' : ''}" 
+                             onclick="App.categories.select(this)">
+                            ${cat.name} <span class="category-item__count">(${cat.count})</span>
+                        </div>
+                    `).join('');
+                },
+
+                navLinks: () => {
+                    const container = document.getElementById('navLinks');
+                    container.innerHTML = DB.navLinks.map((link, index) => 
+                        `<div class="nav-link ${index === 0 ? 'nav-link--active' : ''}">${link}</div>`
+                    ).join('');
+                },
+
+                footerLinks: () => {
+                    const container = document.getElementById('footerLinks');
+                    container.innerHTML = DB.footerColumns.map(col => `
+                        <ul>
+                            ${col.map(item => `<li class="footer__link">${item}</li>`).join('')}
+                        </ul>
+                    `).join('');
+                }
+            },
+
+            /**
+             * UI INTERACTIONS
+             */
+            ui: {
+                showToast: (message) => {
+                    const toast = document.getElementById('toast');
+                    toast.innerText = message;
+                    toast.classList.add('active');
+                    setTimeout(() => toast.classList.remove('active'), 3000);
+                },
+                toggleSearch: () => {
+                    const el = document.getElementById('searchOverlay');
+                    el.classList.toggle('active');
+                    if(el.classList.contains('active')) document.getElementById('searchInput').focus();
+                },
+                closeAnnouncement: () => {
+                    const bar = document.getElementById('saleBar');
+                    bar.style.transform = 'translateY(-100%)';
+                    setTimeout(() => bar.style.display = 'none', 300);
+                },
+                toggleMobileMenu: () => App.ui.showToast('Mobile menu toggled'),
+                addToCart: (item) => App.ui.showToast(`Added ${item} to cart`),
+                handleNavScroll: () => {
+                    const nav = document.getElementById('navbar');
+                    if(window.scrollY > 50) nav.classList.add('scrolled');
+                    else nav.classList.remove('scrolled');
+                }
+            },
+
+            /**
+             * BUSINESS LOGIC
+             */
+            categories: {
+                select: (el) => {
+                    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('is-active'));
+                    el.classList.add('is-active');
+                }
+            },
+            footer: {
+                subscribe: () => {
+                    const email = document.getElementById('emailInput').value;
+                    if(!email || !email.includes('@')) return App.ui.showToast('Please enter a valid email.');
+                    if(!document.getElementById('privacy').checked) return App.ui.showToast('Please accept Privacy Policy.');
+                    App.ui.showToast('Successfully subscribed!');
+                    document.getElementById('emailInput').value = '';
+                },
+                toggleLanguage: () => {
+                    const t = document.getElementById('langText');
+                    const f = document.getElementById('langFlag');
+                    if(t.innerText === 'United States') {
+                        t.innerText = 'Lithuania';
+                        f.src = 'https://flagcdn.com/w40/lt.png';
+                    } else {
+                        t.innerText = 'United States';
+                        f.src = 'https://flagcdn.com/w40/us.png';
+                    }
+                }
+            },
+
+            /**
+             * UTILITIES
+             */
+            utils: {
+                scrollTo: (id) => {
+                    const el = document.getElementById(id);
+                    if(el) el.scrollIntoView({ behavior: 'smooth' });
+                },
+                initScrollReveal: () => {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
+                    }, { threshold: 0.1 });
+                    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+                },
+                attachEventListeners: () => {
+                    window.addEventListener('scroll', () => {
+                        App.ui.handleNavScroll();
+                        // Horizontal Scroll Progress
+                        const scroller = document.getElementById('scrollContainer');
+                        const progress = document.getElementById('scrollProgress');
+                        if(scroller && progress) {
+                            const max = scroller.scrollWidth - scroller.clientWidth;
+                            progress.style.width = max > 0 ? (scroller.scrollLeft / max) * 100 + '%' : '0%';
+                        }
+                    });
+                    // Search Enter Key
+                    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                        if(e.key === 'Enter') {
+                            App.ui.showToast(`Searching: ${e.target.value}`);
+                            App.ui.toggleSearch();
+                            e.target.value = '';
+                        }
+                    });
+                },
+                /**
+                 * PARALLAX EFFECT
+                 * Adds a 3D tilt to hero images based on mouse position for a lively feel
+                 */
+                initParallax: () => {
+                    const hero = document.getElementById('heroSection');
+                    const images = document.querySelectorAll('.hero__img-wrapper');
+                    
+                    hero.addEventListener('mousemove', (e) => {
+                        const x = (window.innerWidth / 2 - e.pageX) / 25;
+                        const y = (window.innerHeight / 2 - e.pageY) / 25;
+                        
+                        images.forEach((img, index) => {
+                            const depth = index === 0 ? 1 : 2; // Larger image moves more
+                            img.style.transform = `translateX(${x * depth}px) translateY(${y * depth}px)`;
+                        });
+                    });
+
+                    hero.addEventListener('mouseleave', () => {
+                        images.forEach(img => img.style.transform = 'translate(0, 0)');
+                    });
+                }
+            }
+        };
+
+        // Initialize App on Load
+        document.addEventListener('DOMContentLoaded', App.init);
+
+    </script>
+</body>
+</html>
